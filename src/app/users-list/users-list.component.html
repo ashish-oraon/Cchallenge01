@@ -1,0 +1,235 @@
+<ng-container *ngIf="filteredUsers$ | async as users">
+  <p-table
+    #dt
+    [value]="users"
+    [resizableColumns]="true"
+    styleClass="p-datatable-gridlines"
+    [globalFilterFields]="['name', 'username']"
+    [(selection)]="selectedUsers"
+    dataKey="id"
+    data-test-id="userTable"
+  >
+    <ng-template pTemplate="caption">
+      <div class="flex justify-content-between p-2">
+        <div class="flex align-items-center">
+          <h3 class="p-m-0">
+            <button
+              pButton
+              pRipple
+              icon="pi pi-plus"
+              class="p-button-primary mr-2"
+              (click)="newUser()"
+            ></button>
+            <button
+              pButton
+              pRipple
+              icon="pi pi-trash"
+              class="p-button-danger mr-2"
+              (click)="deleteUser()"
+              [disabled]="isDeleteDisable"
+            ></button>
+          </h3>
+        </div>
+        <div
+          class="flex align-items-center justify-content-center font-bold text-white border-round m-2"
+        >
+          <span class="p-input-icon-left">
+            <i class="pi pi-search"></i>
+            <input
+              pInputText
+              type="text"
+              placeholder="Search..."
+              (keyup)="triggerSearch($event)"
+            />
+          </span>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr class="userTableRow">
+        <th style="width: 3rem">
+          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th>
+        <th pSortableColumn="name" pResizableColumn>
+          Name <p-sortIcon field="name"></p-sortIcon>
+        </th>
+        <th pSortableColumn="username" pResizableColumn>
+          Username <p-sortIcon field="username"></p-sortIcon>
+        </th>
+        <th pSortableColumn="email" pResizableColumn>
+          Email <p-sortIcon field="email"></p-sortIcon>
+        </th>
+        <th pSortableColumn="website" pResizableColumn>
+          Website <p-sortIcon field="website"></p-sortIcon>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-user>
+      <tr>
+        <td>
+          <p-tableCheckbox [value]="user"></p-tableCheckbox>
+        </td>
+        <td pEditableColumn>
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input pInputText type="text" [(ngModel)]="user.name" />
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ user.name }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td pEditableColumn>
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input pInputText type="text" [(ngModel)]="user.username" />
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ user.username }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td pEditableColumn>
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input pInputText type="text" [(ngModel)]="user.email" />
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ user.email }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+        <td pEditableColumn>
+          <p-cellEditor>
+            <ng-template pTemplate="input">
+              <input pInputText type="text" [(ngModel)]="user.website" />
+            </ng-template>
+            <ng-template pTemplate="output">
+              {{ user.website }}
+            </ng-template>
+          </p-cellEditor>
+        </td>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="summary">
+      <div class="p-d-flex p-ai-center p-jc-between" id="count">
+        There are {{ users ? users.length : 0 }} users in total.
+      </div>
+    </ng-template>
+  </p-table>
+</ng-container>
+<p-dialog
+  [(visible)]="addUserDialog"
+  [style]="{ width: '450px' }"
+  header="User Details"
+  [modal]="true"
+  styleClass="p-fluid"
+>
+  <ng-template pTemplate="content">
+    <form [formGroup]="addUserForm">
+      <div class="p-field mb-2">
+        <label for="name">Name</label>
+        <input
+          type="text"
+          pInputText
+          id="name"
+          formControlName="name"
+          required
+          autofocus
+        />
+        <small
+          class="p-invalid"
+          *ngIf="
+            addUserForm.controls['name'].touched &&
+            !addUserForm.controls['name'].valid
+          "
+          >Please enter a valid name.</small
+        >
+      </div>
+      <div class="p-field mb-2">
+        <label for="name">Username</label>
+        <input
+          type="text"
+          pInputText
+          id="username"
+          formControlName="username"
+          required
+          autofocus
+        />
+        <small
+          class="p-invalid"
+          *ngIf="
+            addUserForm.controls['username'].touched &&
+            !addUserForm.controls['username'].valid
+          "
+          >Please enter a valid username.</small
+        >
+      </div>
+      <div class="p-field mb-2">
+        <label for="name">Email</label>
+        <input
+          type="text"
+          pInputText
+          id="email"
+          formControlName="email"
+          required
+          autofocus
+        />
+        <small
+          class="p-invalid"
+          *ngIf="
+            addUserForm.controls['email'].touched &&
+            !addUserForm.controls['email'].valid
+          "
+          >Please enter a valid email.</small
+        >
+      </div>
+      <div class="p-field mb-2">
+        <label for="name">Website</label>
+        <input
+          type="text"
+          pInputText
+          id="website"
+          formControlName="website"
+          required
+          autofocus
+        />
+        <small
+          class="p-invalid"
+          *ngIf="
+            addUserForm.controls['website'].touched &&
+            !addUserForm.controls['website'].valid
+          "
+          >Please enter a valid website.</small
+        >
+      </div>
+    </form>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      pRipple
+      label="Cancel"
+      icon="pi pi-times"
+      class="p-button-text"
+      (click)="hideDialog()"
+    ></button>
+    <button
+      pButton
+      pRipple
+      label="Save"
+      icon="pi pi-check"
+      class="p-button-success"
+      [disabled]="!addUserForm.valid"
+      (click)="addUser()"
+    ></button>
+  </ng-template>
+</p-dialog>
+
+<p-confirmDialog
+  [style]="{ width: '50vw' }"
+  [baseZIndex]="10000"
+></p-confirmDialog>
+
+<p-toast></p-toast>
